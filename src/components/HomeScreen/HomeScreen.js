@@ -10,12 +10,11 @@ export default function HomeScreen({ createCall, startHairCheck }) {
 
   return (
     <div className="home-screen">
-      <h1>Daily React custom video application</h1>
-      <p>Start the demo with a new unique room by clicking the button below.</p>
+      <h1>You&apos;ve been invited to participate in a study</h1>
+      <p>You&apos;re a possible match for a user testing project on Hotjar Engage</p>
       <button onClick={startDemo} type="button">
-        Click to start a call
+        Get Started
       </button>
-      <p className="small">Select “Allow” to use your camera and mic for this call if prompted</p>
     </div>
   );
 }
