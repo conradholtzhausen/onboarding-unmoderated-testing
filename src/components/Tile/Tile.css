@@ -46,7 +46,7 @@
 }
 
 /* Put screen share front and center in our grid when there is one active */
-.tile-screenshare {
+/* .tile-screenshare {
   grid-column: 1 / -1;
   grid-row: 1;
-}
+} */

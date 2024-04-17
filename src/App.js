@@ -8,10 +8,11 @@ import api from './api';
 import { roomUrlFromPageUrl, pageUrlFromRoomUrl } from './utils';
 
 import HomeScreen from './components/HomeScreen/HomeScreen';
-import Call from './components/Call/Call';
-import Header from './components/Header/Header';
-import Tray from './components/Tray/Tray';
+// import Call from './components/Call/Call';
+// import Header from './components/Header/Header';
+// import Tray from './components/Tray/Tray';
 import HairCheck from './components/HairCheck/HairCheck';
+import UTest from './components/UTest/UTest';
 
 /* We decide what UI to show to users based on the state of the app, which is dependent on the state of the call object. */
 const STATE_IDLE = 'STATE_IDLE';
@@ -37,7 +38,11 @@ export default function App() {
     setAppState(STATE_CREATING);
     return api
       .createRoom()
-      .then((room) => room.url)
+      .then((room) => {
+        console.log("🚀 ~ room:", room);
+        // return `${room.url}?screenshare=true`
+        return room.url
+      })
       .catch((error) => {
         console.error('Error creating room', error);
         setRoomUrl(null);
@@ -193,8 +198,8 @@ export default function App() {
           ) : (
             // No API errors, we passed the hair check, and we've joined the call? Then show the call.
             <>
-              <Call />
-              <Tray leaveCall={startLeavingCall} />
+              <UTest leaveCall={startLeavingCall} />
+              {/* <Tray leaveCall={startLeavingCall} /> */}
               <DailyAudio />
             </>
           )}
@@ -208,7 +213,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header />
+      {/* <Header /> */}
       {renderApp()}
     </div>
   );

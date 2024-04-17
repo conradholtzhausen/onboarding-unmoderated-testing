@@ -6,6 +6,7 @@ import {
   DailyVideo,
   useLocalSessionId,
   useParticipantProperty,
+  useScreenShare,
 } from '@daily-co/daily-react';
 import UserMediaError from '../UserMediaError/UserMediaError';
 
@@ -14,7 +15,8 @@ import './HairCheck.css';
 export default function HairCheck({ joinCall, cancelCall }) {
   const localSessionId = useLocalSessionId();
   const initialUsername = useParticipantProperty(localSessionId, 'user_name');
-  const { currentCam, currentMic, currentSpeaker, microphones, speakers, cameras, setMicrophone, setCamera, setSpeaker } = useDevices();
+  const { currentCam, currentMic, microphones, cameras, setMicrophone, setCamera } = useDevices();
+  const { startScreenShare } = useScreenShare();
   const callObject = useDaily();
   const [username, setUsername] = useState(initialUsername);
 
@@ -39,14 +41,11 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const handleJoin = (e) => {
     e.preventDefault();
     joinCall(username.trim());
+    startScreenShare({ displayMediaOptions: { chromeMediaSourceId: 'tab' } });
   };
 
   const updateMicrophone = (e) => {
     setMicrophone(e.target.value);
-  };
-
-  const updateSpeakers = (e) => {
-    setSpeaker(e.target.value);
   };
 
   const updateCamera = (e) => {
@@ -72,7 +71,7 @@ export default function HairCheck({ joinCall, cancelCall }) {
           value={username || ' '}
         />
       </div>
-
+      
       {/* Microphone select */}
       <div>
         <label htmlFor="micOptions">Microphone:</label>
@@ -80,18 +79,6 @@ export default function HairCheck({ joinCall, cancelCall }) {
           {microphones.map((mic) => (
             <option key={`mic-${mic.device.deviceId}`} value={mic.device.deviceId}>
               {mic.device.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Speakers select */}
-      <div>
-        <label htmlFor="speakersOptions">Speakers:</label>
-        <select name="speakersOptions" id="speakersSelect" onChange={updateSpeakers} value={currentSpeaker?.device?.deviceId}>
-          {speakers.map((speaker) => (
-            <option key={`speaker-${speaker.device.deviceId}`} value={speaker.device.deviceId}>
-              {speaker.device.label}
             </option>
           ))}
         </select>
@@ -110,7 +97,7 @@ export default function HairCheck({ joinCall, cancelCall }) {
       </div>
 
       <button onClick={handleJoin} type="submit">
-        Join call
+        Share screen and start test
       </button>
       <button onClick={cancelCall} className="cancel-call" type="button">
         Back to start
