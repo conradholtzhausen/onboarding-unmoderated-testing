@@ -2,11 +2,13 @@
   We'll add a 30-min expiry (exp) so rooms won't linger too long on your account.
   See other available options at https://docs.daily.co/reference#create-room
  */
-async function createRoom() {
+async function createRoom(surveyId) {
   const exp = Math.round(Date.now() / 1000) + 60 * 30;
   const options = {
     properties: {
       exp,
+      recordings_template: `{domain_name}/${surveyId}/{epoch_time}.mp4`,
+      enable_recording: 'cloud',
     },
   };
 

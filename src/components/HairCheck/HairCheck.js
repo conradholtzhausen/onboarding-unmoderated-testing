@@ -16,10 +16,10 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const localSessionId = useLocalSessionId();
   const initialUsername = useParticipantProperty(localSessionId, 'user_name');
   const { currentCam, currentMic, microphones, cameras, setMicrophone, setCamera } = useDevices();
-  const { startScreenShare } = useScreenShare();
+  const { startScreenShare, isSharingScreen } = useScreenShare();
   const callObject = useDaily();
   const [username, setUsername] = useState(initialUsername);
-
+  const [url, setUrl] = useState();
   const [getUserMediaError, setGetUserMediaError] = useState(false);
 
   useEffect(() => {
@@ -40,8 +40,12 @@ export default function HairCheck({ joinCall, cancelCall }) {
 
   const handleJoin = (e) => {
     e.preventDefault();
-    joinCall(username.trim());
-    startScreenShare({ displayMediaOptions: { chromeMediaSourceId: 'tab' } });
+    joinCall(username.trim(), { url });
+    window.open(url, '_blank');
+  };
+
+  const startScreenShareAndRecording = () => {
+    startScreenShare();
   };
 
   const updateMicrophone = (e) => {
@@ -71,11 +75,26 @@ export default function HairCheck({ joinCall, cancelCall }) {
           value={username || ' '}
         />
       </div>
-      
+
+      <div>
+        <label htmlFor="url">What website are you testing:</label>
+        <input
+          name="url"
+          type="url"
+          placeholder="Enter url"
+          onChange={(e) => setUrl(e.target.value)}
+          value={url}
+        />
+      </div>
+
       {/* Microphone select */}
       <div>
         <label htmlFor="micOptions">Microphone:</label>
-        <select name="micOptions" id="micSelect" onChange={updateMicrophone} value={currentMic?.device?.deviceId}>
+        <select
+          name="micOptions"
+          id="micSelect"
+          onChange={updateMicrophone}
+          value={currentMic?.device?.deviceId}>
           {microphones.map((mic) => (
             <option key={`mic-${mic.device.deviceId}`} value={mic.device.deviceId}>
               {mic.device.label}
@@ -87,7 +106,11 @@ export default function HairCheck({ joinCall, cancelCall }) {
       {/* Camera select */}
       <div>
         <label htmlFor="cameraOptions">Camera:</label>
-        <select name="cameraOptions" id="cameraSelect" onChange={updateCamera} value={currentCam?.device?.deviceId}>
+        <select
+          name="cameraOptions"
+          id="cameraSelect"
+          onChange={updateCamera}
+          value={currentCam?.device?.deviceId}>
           {cameras.map((camera) => (
             <option key={`cam-${camera.device.deviceId}`} value={camera.device.deviceId}>
               {camera.device.label}
@@ -96,8 +119,16 @@ export default function HairCheck({ joinCall, cancelCall }) {
         </select>
       </div>
 
-      <button onClick={handleJoin} type="submit">
-        Share screen and start test
+      <button type="button" onClick={startScreenShareAndRecording}>
+        Share screen and start recording
+      </button>
+      <button
+        disabled={!(isSharingScreen && url)}
+        data-disabled-tooltip-text="Please add a url otherwise this hacky thing won't work"
+        onClick={handleJoin}
+        type="submit"
+        className="start-button">
+        Start test
       </button>
       <button onClick={cancelCall} className="cancel-call" type="button">
         Back to start

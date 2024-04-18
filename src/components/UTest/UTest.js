@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   useParticipantIds,
   useScreenShare,
   useDailyEvent,
   useLocalSessionId,
+  useRecording,
 } from '@daily-co/daily-react';
 
 import './UTest.css';
@@ -27,21 +28,23 @@ export default function UTest({ leaveCall }) {
   const { screens } = useScreenShare();
   const remoteParticipantIds = useParticipantIds({ filter: 'remote' });
 
+  const { startRecording, isRecording } = useRecording();
+
   /* This is for displaying our self-view. */
   const localSessionId = useLocalSessionId();
   const isAlone = remoteParticipantIds.length < 1 || screens.length < 1;
+
+  useEffect(() => {
+    if (!isRecording) {
+      startRecording();
+    }
+  }, []);
 
   const renderCallScreen = () => (
     <>
       <div className={screens.length > 0 ? 'is-screenshare' : 'call'}>
         {/* Your self view */}
-        {localSessionId && (
-          <Tile
-            id={localSessionId}
-            isLocal
-            isAlone={isAlone}
-          />
-        )}
+        {localSessionId && <Tile id={localSessionId} isLocal isAlone={isAlone} />}
 
         {screens.length > 0 && (
           <>
