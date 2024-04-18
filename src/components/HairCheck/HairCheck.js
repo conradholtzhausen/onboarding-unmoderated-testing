@@ -7,7 +7,6 @@ import {
   useLocalSessionId,
   useParticipantProperty,
   useScreenShare,
-  useRecording,
 } from '@daily-co/daily-react';
 import UserMediaError from '../UserMediaError/UserMediaError';
 
@@ -18,7 +17,6 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const initialUsername = useParticipantProperty(localSessionId, 'user_name');
   const { currentCam, currentMic, microphones, cameras, setMicrophone, setCamera } = useDevices();
   const { startScreenShare, isSharingScreen } = useScreenShare();
-  const { startRecording } = useRecording();
   const callObject = useDaily();
   const [username, setUsername] = useState(initialUsername);
   const [url, setUrl] = useState();
@@ -39,11 +37,11 @@ export default function HairCheck({ joinCall, cancelCall }) {
     setUsername(e.target.value);
     callObject.setUserName(e.target.value);
   };
-  
+
   const handleJoin = (e) => {
     e.preventDefault();
     joinCall(username.trim(), { url });
-    startRecording();
+    window.open(url, '_blank');
   };
 
   const startScreenShareAndRecording = () => {
