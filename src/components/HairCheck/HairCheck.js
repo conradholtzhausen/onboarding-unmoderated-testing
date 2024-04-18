@@ -18,7 +18,7 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const initialUsername = useParticipantProperty(localSessionId, 'user_name');
   const { currentCam, currentMic, microphones, cameras, setMicrophone, setCamera } = useDevices();
   const { startScreenShare, isSharingScreen } = useScreenShare();
-  const { startRecording } = useRecording();
+  const { startRecording, isRecording } = useRecording();
   const callObject = useDaily();
   const [username, setUsername] = useState(initialUsername);
   const [url, setUrl] = useState();
@@ -43,12 +43,11 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const handleJoin = (e) => {
     e.preventDefault();
     joinCall(username.trim(), { url });
-    startRecording();
   };
 
   const startScreenShareAndRecording = () => {
     startScreenShare();
-    // startRecording();
+    startRecording();
   };
 
   const updateMicrophone = (e) => {
@@ -126,7 +125,7 @@ export default function HairCheck({ joinCall, cancelCall }) {
         Share screen and start recording
       </button>
       <button
-        disabled={!(isSharingScreen && url)}
+        disabled={!(isRecording && isSharingScreen && url)}
         data-disabled-tooltip-text="Please add a url otherwise this hacky thing won't work"
         onClick={handleJoin}
         type="submit"
