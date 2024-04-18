@@ -34,15 +34,11 @@ export default function App() {
    * We'll need this URL when pre-authorizing (https://docs.daily.co/reference/rn-daily-js/instance-methods/pre-auth)
    * or joining (https://docs.daily.co/reference/rn-daily-js/instance-methods/join) a call.
    */
-  const createCall = useCallback(() => {
+  const createCall = useCallback((surveyId) => {
     setAppState(STATE_CREATING);
     return api
-      .createRoom()
-      .then((room) => {
-        console.log("🚀 ~ room:", room);
-        // return `${room.url}?screenshare=true`
-        return room.url
-      })
+      .createRoom(surveyId)
+      .then((room) => room.url)
       .catch((error) => {
         console.error('Error creating room', error);
         setRoomUrl(null);
@@ -67,9 +63,12 @@ export default function App() {
    * Once we pass the hair check, we can actually join the call.
    * We'll pass the username entered during Haircheck to .join().
    */
-  const joinCall = useCallback((userName) => {
-    callObject.join({ url: roomUrl, userName });
-  }, [callObject, roomUrl]);
+  const joinCall = useCallback(
+    (userName) => {
+      callObject.join({ url: roomUrl, userName });
+    },
+    [callObject, roomUrl],
+  );
 
   /**
    * Start leaving the current call.

@@ -36,6 +36,24 @@ button {
   padding: 12px;
 }
 
+button:disabled {
+  position: relative;
+  background-color: lightgrey;
+  cursor: not-allowed;
+}
+
+button:disabled:hover::before {
+  content: attr(data-disabled-tooltip-text);
+  position: absolute;
+  background: rgba(0,0,0,.9);
+  color: var(--white);
+  padding: 4px 8px;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: 200px;
+}
+
 video {
   width: 100%;
   height: 100%;

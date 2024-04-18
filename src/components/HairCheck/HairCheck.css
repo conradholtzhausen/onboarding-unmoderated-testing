@@ -42,7 +42,7 @@
   margin-top: 2em;
 }
 
-.hair-check button + button {
+.hair-check button:last-of-type {
   margin-top: 0;
 }
 
