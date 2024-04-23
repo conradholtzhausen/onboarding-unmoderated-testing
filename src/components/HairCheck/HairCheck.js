@@ -16,11 +16,14 @@ export default function HairCheck({ joinCall, cancelCall }) {
   const localSessionId = useLocalSessionId();
   const initialUsername = useParticipantProperty(localSessionId, 'user_name');
   const { currentCam, currentMic, microphones, cameras, setMicrophone, setCamera } = useDevices();
-  const { startScreenShare, isSharingScreen } = useScreenShare();
+  const { startScreenShare, stopScreenShare, isSharingScreen } = useScreenShare();
   const callObject = useDaily();
   const [username, setUsername] = useState(initialUsername);
   const [url, setUrl] = useState();
+  const [isSharingWindow, setIsSharingWindow] = useState(false);
+  const [isDisplaySurfaceSupported, setIsDisplaySurfaceSupported] = useState(false);
   const [getUserMediaError, setGetUserMediaError] = useState(false);
+  const [screenShareTrack, setScreenShareTrack] = useState(null);
 
   useEffect(() => {
     setUsername(initialUsername);
@@ -44,8 +47,36 @@ export default function HairCheck({ joinCall, cancelCall }) {
     window.open(url, '_blank');
   };
 
-  const startScreenShareAndRecording = () => {
-    startScreenShare();
+  const handleScreenShare = async () => {
+    const options = {
+      video: true,
+    };
+
+    let captureStream = null;
+
+    if (isSharingScreen) {
+      // stop previously shared screen first
+      stopScreenShare();
+      screenShareTrack?.stop();
+    }
+
+    try {
+      captureStream = await navigator.mediaDevices.getDisplayMedia(options);
+    } catch (err) {
+      console.error(`Failed to get display media: ${err}`);
+    }
+
+    if (captureStream) {
+      setTimeout(() => {
+        startScreenShare({ mediaStream: captureStream });
+        const track = captureStream?.getTracks()?.[0];
+        const settings = track?.getSettings();
+
+        setScreenShareTrack(track);
+        setIsDisplaySurfaceSupported(!!settings?.displaySurface);
+        setIsSharingWindow(settings?.displaySurface === 'window');
+      }, 500);
+    }
   };
 
   const updateMicrophone = (e) => {
@@ -119,11 +150,24 @@ export default function HairCheck({ joinCall, cancelCall }) {
         </select>
       </div>
 
-      <button type="button" onClick={startScreenShareAndRecording}>
-        Share screen and start recording
+      <button type="button" onClick={handleScreenShare}>
+        Share WINDOW and start recording
       </button>
+
+      {isSharingScreen && !isSharingWindow && isDisplaySurfaceSupported && (
+        <div className="error-message">
+          Please share a window instead of what you are sharing right now
+        </div>
+      )}
+
+      {isSharingScreen && !isSharingWindow && !isDisplaySurfaceSupported && (
+        <div className="error-message">
+          I have no idea what you shared so please make sure it was your active window
+        </div>
+      )}
+
       <button
-        disabled={!(isSharingScreen && url)}
+        disabled={!(isSharingScreen && url && (isSharingWindow || !isDisplaySurfaceSupported))}
         data-disabled-tooltip-text="Please add a url otherwise this hacky thing won't work"
         onClick={handleJoin}
         type="submit"

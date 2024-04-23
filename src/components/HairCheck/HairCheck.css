@@ -1,3 +1,13 @@
+.error-message {
+  background: rgba(255, 0, 0, .1);
+  border: 1px solid red;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  color: red;
+  font-weight: bold;
+}
+
 .hair-check {
   background: white;
   border: 1px solid grey;
@@ -11,7 +21,7 @@
 }
 
 .hair-check video {
-  max-width: 480px;
+  max-width: 600px;
 }
 
 .hair-check label {
