@@ -1,37 +1,64 @@
+/* GRID AND LAYOUT */
 .app {
   background-color: var(--darkest-blue);
+  width: 100vw;
   min-height: 100vh;
   display: grid;
-  /* this is where we're dividing our app in 3 rows: header, call, and tray. The meeting information
-  is outside the app's document flow.*/
-  grid-template-rows: 1fr 4rem;
-  /* grid-template-rows: 4rem 1fr 4rem; */
+  grid-template: 
+    "panel-left panel-right" 1fr
+    "footer footer" 4rem;
 }
 
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  padding: 100px;
+}
+
+.panel:first-of-type {
+  grid-area: panel-left;
+  background-color: var(--white);
+}
+
+.panel:not(:first-of-type) {
+  grid-area: panel-right;
+}
+
+.footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-inline: 16px;
+  border-top: 1px solid var(--grey);
+  background-color: var(--white);
+}
+
+/* TYPOGRAPHY */
 p {
   font-size: 16px;
-  margin: 16px;
-  text-align: center;
+  margin: 16px 0;
 }
 
 h1 {
   margin: 0;
   padding: 0;
   font-weight: 500;
-  color: var(--turquoise);
 }
 
-p.small {
-  color: var(--dark-grey);
-  font-size: 12px;
+hr {
+  border-top: 1px solid var(--grey);
 }
 
+/* HTML ELEMENTS */
 button {
-  background-color: var(--turquoise);
+  background-color: var(--primary);
+  color: var(--white);
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 12px;
-  font-weight: 600;
   cursor: pointer;
   padding: 12px;
 }
@@ -59,31 +86,4 @@ video {
   height: 100%;
   object-fit: cover;
   border-radius: 4px;
-}
-
-.api-error {
-  background: var(--dark-blue-border);
-  width: 480px;
-  height: 270px;
-  display: inline-flex;
-  flex-direction: column;
-  align-self: center;
-  justify-self: center;
-  text-align: center;
-  padding: 3rem;
-  box-sizing: border-box;
-  border-radius: 4px;
-}
-
-.api-error p {
-  color: var(--white);
-}
-
-.api-error h1 {
-  color: var(--red-dark);
-}
-
-.api-error a,
-.api-error a:visited {
-  color: var(--white);
 }

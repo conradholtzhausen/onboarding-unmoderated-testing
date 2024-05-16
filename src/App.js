@@ -4,9 +4,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import { DailyAudio, DailyProvider } from '@daily-co/daily-react';
 
-import api from './api';
-import { roomUrlFromPageUrl, pageUrlFromRoomUrl } from './utils';
-
 import HomeScreen from './components/HomeScreen/HomeScreen';
 // import Call from './components/Call/Call';
 // import Header from './components/Header/Header';
@@ -16,7 +13,7 @@ import UTest from './components/UTest/UTest';
 
 /* We decide what UI to show to users based on the state of the app, which is dependent on the state of the call object. */
 const STATE_IDLE = 'STATE_IDLE';
-const STATE_CREATING = 'STATE_CREATING';
+// const STATE_CREATING = 'STATE_CREATING';
 const STATE_JOINING = 'STATE_JOINING';
 const STATE_JOINED = 'STATE_JOINED';
 const STATE_LEAVING = 'STATE_LEAVING';
@@ -27,35 +24,44 @@ export default function App() {
   const [appState, setAppState] = useState(STATE_IDLE);
   const [roomUrl, setRoomUrl] = useState(null);
   const [callObject, setCallObject] = useState(null);
-  const [apiError, setApiError] = useState(false);
 
   /**
    * Create a new call room. This function will return the newly created room URL.
    * We'll need this URL when pre-authorizing (https://docs.daily.co/reference/rn-daily-js/instance-methods/pre-auth)
    * or joining (https://docs.daily.co/reference/rn-daily-js/instance-methods/join) a call.
    */
-  const createCall = useCallback((surveyId) => {
-    setAppState(STATE_CREATING);
-    return api
-      .createRoom(surveyId)
-      .then((room) => room.url)
-      .catch((error) => {
-        console.error('Error creating room', error);
-        setRoomUrl(null);
-        setAppState(STATE_IDLE);
-        setApiError(true);
-      });
-  }, []);
+  // const createCall = useCallback(() => {
+  //   setAppState(STATE_CREATING);
+  //   return api
+  //     .createRoom()
+  //     .then((room) => room.url)
+  //     .catch((error) => {
+  //       console.error('Error creating room', error);
+  //       setRoomUrl(null);
+  //       setAppState(STATE_IDLE);
+  //     });
+  // }, []);
 
   /**
    * We've created a room, so let's start the hair check. We won't be joining the call yet.
    */
-  const startHairCheck = useCallback(async (url) => {
+  const startTest = useCallback(async () => {
+    const search = new URLSearchParams(window.location.search);
+
+    const url = search.get('room_url');
+    const token = search.get('token');
+
+    if (!(url && token)) {
+      // eslint-disable-next-line no-alert
+      alert('You need a room url and a token to play this game bucko!');
+      return;
+    }
+
     const newCallObject = DailyIframe.createCallObject();
     setRoomUrl(url);
     setCallObject(newCallObject);
     setAppState(STATE_HAIRCHECK);
-    await newCallObject.preAuth({ url }); // add a meeting token here if your room is private
+    await newCallObject.preAuth({ url, token });
     await newCallObject.startCamera();
   }, []);
 
@@ -94,21 +100,21 @@ export default function App() {
    * If a room's already specified in the page's URL when the component mounts,
    * join the room.
    */
-  useEffect(() => {
-    const url = roomUrlFromPageUrl();
-    if (url) {
-      startHairCheck(url);
-    }
-  }, [startHairCheck]);
+  // useEffect(() => {
+  //   const url = roomUrlFromPageUrl();
+  //   if (url) {
+  //     startTest(url);
+  //   }
+  // }, [startTest]);
 
   /**
    * Update the page's URL to reflect the active call when roomUrl changes.
    */
-  useEffect(() => {
-    const pageUrl = pageUrlFromRoomUrl(roomUrl);
-    if (pageUrl === window.location.href) return;
-    window.history.replaceState(null, null, pageUrl);
-  }, [roomUrl]);
+  // useEffect(() => {
+  //   const pageUrl = pageUrlFromRoomUrl(roomUrl);
+  //   if (pageUrl === window.location.href) return;
+  //   window.history.replaceState(null, null, pageUrl);
+  // }, [roomUrl]);
 
   /**
    * Update app state based on reported meeting state changes.
@@ -164,30 +170,13 @@ export default function App() {
    * Show the call UI if we're either joining, already joined, or have encountered
    * an error that is _not_ a room API error.
    */
-  const showCall = !apiError && [STATE_JOINING, STATE_JOINED, STATE_ERROR].includes(appState);
+  const showCall = [STATE_JOINING, STATE_JOINED, STATE_ERROR].includes(appState);
 
   /* When there's no problems creating the room and startHairCheck() has been successfully called,
    * we can show the hair check UI. */
-  const showHairCheck = !apiError && appState === STATE_HAIRCHECK;
+  const showHairCheck = appState === STATE_HAIRCHECK;
 
   const renderApp = () => {
-    // If something goes wrong with creating the room.
-    if (apiError) {
-      return (
-        <div className="api-error">
-          <h1>Error</h1>
-          <p>
-            Room could not be created. Check if your `.env` file is set up correctly. For more
-            information, see the{' '}
-            <a href="https://github.com/daily-demos/custom-video-daily-react-hooks#readme">
-              readme
-            </a>{' '}
-            :)
-          </p>
-        </div>
-      );
-    }
-
     if (showHairCheck || showCall) {
       return (
         <DailyProvider callObject={callObject}>
@@ -207,7 +196,7 @@ export default function App() {
     }
 
     // The default view is the HomeScreen, from where we start the demo.
-    return <HomeScreen createCall={createCall} startHairCheck={startHairCheck} />;
+    return <HomeScreen startTest={startTest} />;
   };
 
   return (

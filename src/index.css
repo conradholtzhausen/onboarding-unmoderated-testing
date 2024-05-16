@@ -1,14 +1,11 @@
 :root {
-  --grey-lightest: #f7f9fa;
+  --grey-lightest: #F8F9FC;
   --white: #ffffff;
   --grey: #c8d1dc;
   --dark-grey: #6b7785;
-  --dark-blue: #1f2d3d;
-  --dark-blue-border: #2b3f56;
-  --darkest-blue: #121a24;
   --green: #72cc18;
   --red-dark: #f63135;
-  --turquoise: #1bebb9;
+  --primary: #324FBE;
 }
 
 * {
@@ -28,6 +25,7 @@ body {
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  background: var(--grey-lightest);
 }
 
 button {
