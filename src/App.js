@@ -5,11 +5,7 @@ import DailyIframe from '@daily-co/daily-js';
 import { DailyAudio, DailyProvider } from '@daily-co/daily-react';
 
 import HomeScreen from './components/HomeScreen/HomeScreen';
-// import Call from './components/Call/Call';
-// import Header from './components/Header/Header';
-// import Tray from './components/Tray/Tray';
-import HairCheck from './components/HairCheck/HairCheck';
-import UTest from './components/UTest/UTest';
+import UnmoderatedTest from './components/UnmoderatedTest/UnmoderatedTest';
 
 /* We decide what UI to show to users based on the state of the app, which is dependent on the state of the call object. */
 const STATE_IDLE = 'STATE_IDLE';
@@ -22,25 +18,7 @@ const STATE_HAIRCHECK = 'STATE_HAIRCHECK';
 
 export default function App() {
   const [appState, setAppState] = useState(STATE_IDLE);
-  const [roomUrl, setRoomUrl] = useState(null);
   const [callObject, setCallObject] = useState(null);
-
-  /**
-   * Create a new call room. This function will return the newly created room URL.
-   * We'll need this URL when pre-authorizing (https://docs.daily.co/reference/rn-daily-js/instance-methods/pre-auth)
-   * or joining (https://docs.daily.co/reference/rn-daily-js/instance-methods/join) a call.
-   */
-  // const createCall = useCallback(() => {
-  //   setAppState(STATE_CREATING);
-  //   return api
-  //     .createRoom()
-  //     .then((room) => room.url)
-  //     .catch((error) => {
-  //       console.error('Error creating room', error);
-  //       setRoomUrl(null);
-  //       setAppState(STATE_IDLE);
-  //     });
-  // }, []);
 
   /**
    * We've created a room, so let's start the hair check. We won't be joining the call yet.
@@ -58,23 +36,13 @@ export default function App() {
     }
 
     const newCallObject = DailyIframe.createCallObject();
-    setRoomUrl(url);
     setCallObject(newCallObject);
     setAppState(STATE_HAIRCHECK);
+    // TODO: uncomment to work
     await newCallObject.preAuth({ url, token });
     await newCallObject.startCamera();
+    await newCallObject.join({ url, token });
   }, []);
-
-  /**
-   * Once we pass the hair check, we can actually join the call.
-   * We'll pass the username entered during Haircheck to .join().
-   */
-  const joinCall = useCallback(
-    (userName) => {
-      callObject.join({ url: roomUrl, userName });
-    },
-    [callObject, roomUrl],
-  );
 
   /**
    * Start leaving the current call.
@@ -84,7 +52,7 @@ export default function App() {
     // If we're in the error state, we've already "left", so just clean up
     if (appState === STATE_ERROR) {
       callObject.destroy().then(() => {
-        setRoomUrl(null);
+        // setRoomUrl(null);
         setCallObject(null);
         setAppState(STATE_IDLE);
       });
@@ -96,25 +64,6 @@ export default function App() {
     }
   }, [callObject, appState]);
 
-  /**
-   * If a room's already specified in the page's URL when the component mounts,
-   * join the room.
-   */
-  // useEffect(() => {
-  //   const url = roomUrlFromPageUrl();
-  //   if (url) {
-  //     startTest(url);
-  //   }
-  // }, [startTest]);
-
-  /**
-   * Update the page's URL to reflect the active call when roomUrl changes.
-   */
-  // useEffect(() => {
-  //   const pageUrl = pageUrlFromRoomUrl(roomUrl);
-  //   if (pageUrl === window.location.href) return;
-  //   window.history.replaceState(null, null, pageUrl);
-  // }, [roomUrl]);
 
   /**
    * Update app state based on reported meeting state changes.
@@ -136,7 +85,7 @@ export default function App() {
           break;
         case 'left-meeting':
           callObject.destroy().then(() => {
-            setRoomUrl(null);
+            // setRoomUrl(null);
             setCallObject(null);
             setAppState(STATE_IDLE);
           });
@@ -180,17 +129,10 @@ export default function App() {
     if (showHairCheck || showCall) {
       return (
         <DailyProvider callObject={callObject}>
-          {showHairCheck ? (
-            // No API errors? Let's check our hair then.
-            <HairCheck joinCall={joinCall} cancelCall={startLeavingCall} />
-          ) : (
-            // No API errors, we passed the hair check, and we've joined the call? Then show the call.
-            <>
-              <UTest leaveCall={startLeavingCall} />
-              {/* <Tray leaveCall={startLeavingCall} /> */}
-              <DailyAudio />
-            </>
-          )}
+          <>
+            <UnmoderatedTest leaveCall={startLeavingCall} />
+            <DailyAudio />
+          </>
         </DailyProvider>
       );
     }

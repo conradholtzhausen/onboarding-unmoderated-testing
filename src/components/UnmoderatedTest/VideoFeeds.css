@@ -1,0 +1,23 @@
+.self-view.alone video {
+  object-fit: cover !important;
+}
+
+.is-screenshare {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-row-gap: 15px;
+}
+
+.is-screenshare .self-view.alone {
+  width: 130px;
+  height: 72px;
+  position: absolute;
+  left: -20px;
+  top: -42px;
+}
+
+/* .is-screenshare .tile-video {
+  width: 240px;
+  height: 135px;
+} */
