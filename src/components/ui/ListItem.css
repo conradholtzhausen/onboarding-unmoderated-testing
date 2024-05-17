@@ -1,0 +1,29 @@
+.list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+  
+.list-item .icon {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    border-radius: 2px;
+    padding: 8px;
+    background-color: var(--primary-light);
+}
+
+.list-item-text {
+    flex: 1;
+}
+
+.list-item .title {
+    font-weight: 600;
+}
+
+.list-item .description {
+    color: var(--dark-grey);
+    margin-block: 8px;
+}

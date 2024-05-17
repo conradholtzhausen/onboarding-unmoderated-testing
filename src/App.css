@@ -5,8 +5,20 @@
   min-height: 100vh;
   display: grid;
   grid-template: 
+    "error error"
     "panel-left panel-right" 1fr
     "footer footer" 4rem;
+}
+
+.error-message {
+  background: rgba(255, 0, 0, .1);
+  border: 1px solid var(--red-dark);
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 4px;
+  color: var(--red-dark);
+  font-weight: 600;
+  grid-area: error;
 }
 
 .panel {
@@ -14,7 +26,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  padding: 100px;
+  padding: 50px;
+  min-width: 350px;
 }
 
 .panel:first-of-type {
@@ -34,6 +47,7 @@
   padding-inline: 16px;
   border-top: 1px solid var(--grey);
   background-color: var(--white);
+  gap: 8px;
 }
 
 /* TYPOGRAPHY */
@@ -49,7 +63,10 @@ h1 {
 }
 
 hr {
-  border-top: 1px solid var(--grey);
+  border-top: unset;
+  margin: 16px 0;
+  height: 1px;
+  background-color: var(--grey);
 }
 
 /* HTML ELEMENTS */
@@ -61,6 +78,7 @@ button {
   font-size: 12px;
   cursor: pointer;
   padding: 12px;
+  white-space: nowrap;
 }
 
 button:disabled {
@@ -76,9 +94,14 @@ button:disabled:hover::before {
   color: var(--white);
   padding: 4px 8px;
   bottom: calc(100% + 4px);
-  left: 0;
   right: 0;
   min-width: 200px;
+}
+
+button.secondary {
+  background-color: var(--white);
+  color: var(--black);
+  border: 1px solid var(--primary);
 }
 
 video {
@@ -86,4 +109,11 @@ video {
   height: 100%;
   object-fit: cover;
   border-radius: 4px;
+}
+
+input, textarea, select {
+  border-radius: 4px;
+  padding: 12px 8px;
+  border: 1px solid var(--grey);
+  flex: 1;
 }
